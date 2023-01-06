@@ -1,7 +1,9 @@
 import os
 import discord
+import json
 from discord.ext import commands
 from dotenv import load_dotenv
+import requests
 
 load_dotenv()
 TOKEN = os.getenv('TOKEN')
@@ -31,11 +33,16 @@ async def on_message(message) -> str:
         return
 
     if message.content.startswith('!trivia'):
-        await message.channel.send('Ready for some Trivia?!')
+        question = get_question()
+        await message.channel.send(question)
 
-    trivia_questions = [
-    {'question':}
-]
+def get_question():
+    response = requests.get("http://127.0.0.1:8000/trivia/")
+    print(response.status_code)
+    json_data = json.loads(response.text)
+    question = json_data[0]['question']
+    return(question)
+
 
 class WarHammerQuestionBot(commands.Bot):
     def __init__(self):
