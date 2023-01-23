@@ -3,6 +3,7 @@ import discord
 import json
 from discord.ext import commands
 from dotenv import load_dotenv
+import asyncio
 import requests
 
 load_dotenv()
@@ -13,6 +14,16 @@ intents.message_content = True
 
 client = discord.Client(intents=intents)
 
+# @client.event
+# def check(m):
+#     try:
+#         guess = await client.wait_for('message', check=check, timeout=5.0)
+#     except asyncio.TimeoutError:
+#         return await message.channel.send('Timeout')
+
+#     return m.author == message.author and m.content.isdigit()
+
+    
 @client.event
 async def on_ready():
     for guild in client.guilds:
@@ -27,21 +38,34 @@ async def on_ready():
     members = '\n -'.join([member.name for member in guild.members])
     print(f'Guild Members:\n - {members}')
 
+
+def get_question():
+    question = ''
+    id = 1
+    answer = 0
+    response = requests.get("http://127.0.0.1:8000/trivia/random")
+    json_data = json.loads(response.text)
+    question += json_data[0]['title'] + '\n'
+    for item in json_data[0]['answer']:
+        question += str(id) + "." + item['answer'] + "\n"
+
+        if item['is_correct']:
+            answer = id
+            
+        id += 1
+
+    return(question, answer)
+
 @client.event
 async def on_message(message) -> str:
     if message.author == client.user:
         return
 
     if message.content.startswith('!trivia'):
-        question = get_question()
+        question, answer = get_question()
         await message.channel.send(question)
 
-def get_question():
-    response = requests.get("http://127.0.0.1:8000/trivia/")
-    print(response.status_code)
-    json_data = json.loads(response.text)
-    question = json_data[0]['question']
-    return(question)
+ 
 
 
 class WarHammerQuestionBot(commands.Bot):
