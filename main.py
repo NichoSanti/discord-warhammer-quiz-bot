@@ -14,16 +14,7 @@ intents.message_content = True
 
 client = discord.Client(intents=intents)
 
-# @client.event
-# def check(m):
-#     try:
-#         guess = await client.wait_for('message', check=check, timeout=5.0)
-#     except asyncio.TimeoutError:
-#         return await message.channel.send('Timeout')
 
-#     return m.author == message.author and m.content.isdigit()
-
-    
 @client.event
 async def on_ready():
     for guild in client.guilds:
@@ -65,8 +56,17 @@ async def on_message(message) -> str:
         question, answer = get_question()
         await message.channel.send(question)
 
- 
+    def check(m):
+        return m.author == message.author and m.content.isdigit()
+    try:
+        guess = await client.wait_for('message', check=check, timeout=5.0)
+    except asyncio.TimeoutError:
+        return await message.channel.send('Timeout')
 
+    if int(guess.content) == answer:
+        await message.channel.send('You got it right!')
+    else:
+        await message.channel.send('Try again')
 
 class WarHammerQuestionBot(commands.Bot):
     def __init__(self):
