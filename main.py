@@ -56,17 +56,17 @@ async def on_message(message) -> str:
         question, answer = get_question()
         await message.channel.send(question)
 
-    def check(m):
-        return m.author == message.author and m.content.isdigit()
-    try:
-        guess = await client.wait_for('message', check=check, timeout=5.0)
-    except asyncio.TimeoutError:
-        return await message.channel.send('Timeout')
+        def check(m):
+            return m.author == message.author and m.content.isdigit()
+        try:
+            guess = await client.wait_for('message', check=check, timeout=15.0)
+        except asyncio.TimeoutError:
+            return await message.channel.send('Timeout')
 
-    if int(guess.content) == answer:
-        await message.channel.send('You got it right!')
-    else:
-        await message.channel.send('Try again')
+        if int(guess.content) == answer:
+            await message.channel.send('You got it right!')
+        else:
+            await message.channel.send('Try again')
 
 class WarHammerQuestionBot(commands.Bot):
     def __init__(self):
