@@ -38,7 +38,7 @@ def get_question():
     json_data = json.loads(response.text)
     question += json_data[0]['title'] + '\n'
     for item in json_data[0]['answer']:
-        question += str(id) + "." + item['answer'] + "\n"
+        question += str(id) + ". " + item['answer'] + "\n"
 
         if item['is_correct']:
             answer = id
